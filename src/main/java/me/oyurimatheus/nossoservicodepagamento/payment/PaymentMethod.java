@@ -2,65 +2,32 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 
 enum PaymentMethod {
 
-    CREDIT_CARD {
+    CREDIT_CARD(true, "A credit card used to pay your purchases online or in local"),
+    CASH(false, "The good old money"),
+    CARD_MACHINE(false, "Pay with all your cards"),
+    CHECK(false, "A way to pay where places do not accept cards");
 
-        @Override
-        String description() {
-            return "A credit card used to pay your purchases online or in local";
-        }
+    private final boolean payOnline;
+    private final String description;
 
-        @Override
-        boolean payOnline() {
-            return true;
-        }
-    },
-    CASH {
-
-        @Override
-        String description() {
-            return "The good old money";
-        }
-
-        @Override
-        boolean payOnline() {
-            return false;
-        }
-    },
-    CARD_MACHINE {
-
-        @Override
-        String description() {
-            return "Pay with all your cards";
-        }
-
-        @Override
-        boolean payOnline() {
-            return false;
-        }
-    },
-    CHECK {
-
-        @Override
-        String description() {
-            return "A way to pay where places do not accept cards";
-        }
-
-        @Override
-        boolean payOnline() {
-            return false;
-        }
-    };
-
+    PaymentMethod(boolean payOnline, String description) {
+        this.payOnline = payOnline;
+        this.description = description;
+    }
 
     /**
      *
-     * @return a description of payment method chose
+     * @return a description of payment method chosen
      */
-    abstract String description();
+    String description() {
+        return description;
+    };
 
     /**
      *
      * @return if payment method is able to be used online
      */
-    abstract boolean payOnline();
+    boolean payOnline() {
+        return payOnline;
+    };
 }
