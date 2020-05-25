@@ -13,12 +13,10 @@ INSERT INTO restaurants (restaurant_id, name) VALUES (5, 'Olivias');
 
 
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CREDIT_CARD', 1);
-INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CASH', 1);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CREDIT_CARD', 2);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CASH', 2);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CHECK', 2);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CREDIT_CARD', 3);
-INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CASH', 3);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CHECK', 3);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CASH', 4);
 INSERT INTO user_payment_methods(payment_method, user_id) VALUES ('CHECK', 4);
