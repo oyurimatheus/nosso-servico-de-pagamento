@@ -2,8 +2,11 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 
 import javax.validation.constraints.Email;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 interface RestaurantRepository extends Repository<Restaurant, Long> {
@@ -20,7 +23,8 @@ interface RestaurantRepository extends Repository<Restaurant, Long> {
             "ON (up.payment_method = rp.payment_method) AND (up.user_id = u.user_id) " +
             "WHERE rp.restaurant_id = :restaurantId AND u.email = :user",
     nativeQuery = true)
-    Set<PaymentMethod> findPaymentMethodsAllowedTo(Long restaurantId, @Email String user);
+    Set<PaymentMethod> findPaymentMethodsAllowedTo(@Param("restaurantId") Long restaurantId, @Param("user") @Email String user);
 
 
+    Optional<Restaurant> findById(Long id);
 }

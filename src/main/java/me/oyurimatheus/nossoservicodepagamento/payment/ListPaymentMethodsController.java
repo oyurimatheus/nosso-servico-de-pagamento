@@ -3,7 +3,7 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -13,19 +13,29 @@ import static org.springframework.http.ResponseEntity.ok;
 class ListPaymentMethodsController {
 
     private final RestaurantRepository restaurantRepository;
+    private final FraudCheckService fraudCheck;
 
-    ListPaymentMethodsController(RestaurantRepository restaurantRepository) {
+    ListPaymentMethodsController(RestaurantRepository restaurantRepository,
+                                 FraudCheckService fraudCheck) {
         this.restaurantRepository = restaurantRepository;
+        this.fraudCheck = fraudCheck;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
-                                                      @RequestParam("user_email") String user) {
+                                                      @RequestParam("user_email") String client) {
 
-        Set<PaymentMethod> paymentsAllowed = restaurantRepository.findPaymentMethodsAllowedTo(restaurantId, user);
+        var restaurant = restaurantRepository.findById(restaurantId).get();
 
-        var response = PaymentMethodsAllowedResponse.from(paymentsAllowed);
+        Set<PaymentMethod> availablePaymentMethods = restaurantRepository.findPaymentMethodsAllowedTo(restaurantId, client);
+        List<Fraud> frauds = fraudCheck.checkClient(client);
+
+        Set<PaymentMethod> paymentMethodsAllowed = restaurant.paymentsAllowedTo(new PaymentsAvailable(frauds, availablePaymentMethods));
+
+        Set<PaymentMethodsAllowedResponse> response = PaymentMethodsAllowedResponse.from(paymentMethodsAllowed);
 
         return ok(response);
+
+
     }
 }
