@@ -14,11 +14,11 @@ class PossibleEmailFraudsterCheck implements FraudCheck{
     private static final Set<String> possibleFraudsters = Set.of("stich@toystory.com", "woody@toystory.com");
 
     @Override
-    public Optional<Fraud> check(String email) {
-        if (!possibleFraudsters.contains(email)) {
+    public Optional<Fraud> check(User client) {
+        if (!possibleFraudsters.contains(client.getEmail())) {
             return Optional.empty();
         }
 
-        return Optional.of(new Fraud(EMAIL, email));
+        return Optional.of(new Fraud(EMAIL, client));
     }
 }

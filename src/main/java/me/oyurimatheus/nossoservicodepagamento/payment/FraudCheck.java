@@ -6,8 +6,8 @@ interface FraudCheck {
 
     /**
      *
-     * @param email client identification
+     * @param client who will be checked
      * @return  a possible {@link Fraud} if exists
      */
-    Optional<Fraud> check(String email);
+    Optional<Fraud> check(User client);
 }

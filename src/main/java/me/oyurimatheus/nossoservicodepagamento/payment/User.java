@@ -4,8 +4,11 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Table(name = "users")
@@ -36,4 +39,19 @@ class User {
     private User() { }
 
 
+    public String getEmail() {
+        return email;
+    }
+
+    public Set<PaymentMethod> paymentMethodsTo(Restaurant restaurant, List<Fraud> frauds) {
+        Set<PaymentMethod> paymentAvailable = restaurant.paymentsAvailableTo(paymentMethods);
+
+        if (frauds.isEmpty()) {
+            return paymentAvailable;
+        }
+
+        return paymentAvailable.stream()
+                               .filter(method -> !method.payOnline())
+                               .collect(toSet());
+    }
 }

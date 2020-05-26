@@ -18,10 +18,10 @@ class FraudCheckService {
         this.fraudChecks = fraudChecks;
     }
 
-    List<Fraud> checkClient(String email) {
+    List<Fraud> checkClient(User client) {
 
         return fraudChecks.stream()
-                           .map(checking -> checking.check(email))
+                           .map(checking -> checking.check(client))
                            .filter(Optional::isPresent)
                            .map(Optional::get)
                            .collect(toList());

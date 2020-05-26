@@ -3,12 +3,12 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 class Fraud {
 
 
-    private final String client;
+    private final User client;
     private final FraudType type;
 
-    Fraud(FraudType type, String email) {
+    Fraud(FraudType type, User client) {
         this.type = type;
-        this.client = email;
+        this.client = client;
     }
 
     enum FraudType {

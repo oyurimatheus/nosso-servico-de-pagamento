@@ -3,6 +3,7 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.HashSet;
 import java.util.Set;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -39,5 +40,12 @@ class Restaurant {
         }
 
         return paymentsAvailable.offlinePaymentMethods();
+    }
+
+    public Set<PaymentMethod> paymentsAvailableTo(Set<PaymentMethod> clientPaymentMethods) {
+        var clientPayment = new HashSet<>(clientPaymentMethods);
+        clientPayment.retainAll(paymentMethods);
+
+        return clientPayment;
     }
 }

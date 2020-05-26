@@ -13,29 +13,30 @@ import static org.springframework.http.ResponseEntity.ok;
 class ListPaymentMethodsController {
 
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
     private final FraudCheckService fraudCheck;
 
     ListPaymentMethodsController(RestaurantRepository restaurantRepository,
+                                 UserRepository userRepository,
                                  FraudCheckService fraudCheck) {
         this.restaurantRepository = restaurantRepository;
+        this.userRepository = userRepository;
         this.fraudCheck = fraudCheck;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
-                                                      @RequestParam("user_email") String client) {
+                                                      @RequestParam("user_email") String email) {
 
         var restaurant = restaurantRepository.findById(restaurantId).get();
+        var client = userRepository.findByEmail(email).get();
 
-        Set<PaymentMethod> availablePaymentMethods = restaurantRepository.findPaymentMethodsAllowedTo(restaurantId, client);
         List<Fraud> frauds = fraudCheck.checkClient(client);
 
-        Set<PaymentMethod> paymentMethodsAllowed = restaurant.paymentsAllowedTo(new PaymentsAvailable(frauds, availablePaymentMethods));
+        Set<PaymentMethod> paymentMethodsAllowed = client.paymentMethodsTo(restaurant, frauds);
 
-        Set<PaymentMethodsAllowedResponse> response = PaymentMethodsAllowedResponse.from(paymentMethodsAllowed);
+        Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
 
         return ok(response);
-
-
     }
 }

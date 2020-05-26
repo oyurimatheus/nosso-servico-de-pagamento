@@ -1,16 +1,15 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
-class PaymentMethodsAllowedResponse {
+class PaymentMethodsResponse {
 
     private final String id;
     private final String description;
 
-    PaymentMethodsAllowedResponse(PaymentMethod paymentMethod) {
+    private PaymentMethodsResponse(PaymentMethod paymentMethod) {
         this.id = paymentMethod.name();
         this.description = paymentMethod.description();
     }
@@ -23,9 +22,9 @@ class PaymentMethodsAllowedResponse {
         return description;
     }
 
-    static Set<PaymentMethodsAllowedResponse> from(Set<PaymentMethod> paymentsAllowed) {
+    static Set<PaymentMethodsResponse> from(Set<PaymentMethod> paymentsAllowed) {
         return paymentsAllowed.stream()
-                              .map(PaymentMethodsAllowedResponse::new)
+                              .map(PaymentMethodsResponse::new)
                               .collect(toSet());
     }
 }
