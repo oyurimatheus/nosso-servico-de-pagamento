@@ -3,7 +3,6 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -14,14 +13,14 @@ class ListPaymentMethodsController {
 
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
-    private final FraudCheckService fraudCheck;
+    private final Set<FraudCheck> fraudChecks;
 
     ListPaymentMethodsController(RestaurantRepository restaurantRepository,
                                  UserRepository userRepository,
-                                 FraudCheckService fraudCheck) {
+                                 Set<FraudCheck> fraudChecks) {
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
-        this.fraudCheck = fraudCheck;
+        this.fraudChecks = fraudChecks;
     }
 
     @GetMapping("/{id}")
@@ -31,9 +30,7 @@ class ListPaymentMethodsController {
         var restaurant = restaurantRepository.findById(restaurantId).get();
         var client = userRepository.findByEmail(email).get();
 
-        List<Fraud> frauds = fraudCheck.checkClient(client);
-
-        Set<PaymentMethod> paymentMethodsAllowed = client.paymentMethodsTo(restaurant, frauds);
+        Set<PaymentMethod> paymentMethodsAllowed = client.paymentMethodsTo(restaurant, fraudChecks);
 
         Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
 

@@ -4,12 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 import static javax.persistence.GenerationType.IDENTITY;
+import static me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod.CREDIT_CARD;
 
 @Table(name = "users")
 @Entity
@@ -43,15 +43,23 @@ class User {
         return email;
     }
 
-    public Set<PaymentMethod> paymentMethodsTo(Restaurant restaurant, List<Fraud> frauds) {
+    public Set<PaymentMethod> paymentMethodsTo(Restaurant restaurant, Set<FraudCheck> fraudsChecking) {
         Set<PaymentMethod> paymentAvailable = restaurant.paymentsAvailableTo(paymentMethods);
 
-        if (frauds.isEmpty()) {
-            return paymentAvailable;
+        boolean hasFraud = fraudsChecking.stream()
+                                         .map(fraudCheck -> fraudCheck.check(this))
+                                         .anyMatch(Optional::isPresent);
+
+        if (hasFraud) {
+            return paymentAvailable.stream()
+                                   .filter(method -> !method.payOnline())
+                                   .collect(toSet());
         }
 
-        return paymentAvailable.stream()
-                               .filter(method -> !method.payOnline())
-                               .collect(toSet());
+        return paymentAvailable;
+    }
+
+    public boolean canPayOnline() {
+        return paymentMethods.contains(CREDIT_CARD);
     }
 }
