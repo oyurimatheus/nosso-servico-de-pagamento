@@ -3,8 +3,11 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Table(name = "restaurants")
@@ -32,4 +35,19 @@ class Restaurant {
      */
     @Deprecated
     Restaurant() { }
+
+    public Set<PaymentMethod> paymentsAllowedTo(PaymentsAvailable paymentsAvailable) {
+        if (!paymentsAvailable.hasFrauds()) {
+            return paymentsAvailable.availablePaymentMethods();
+        }
+
+        return paymentsAvailable.offlinePaymentMethods();
+    }
+
+    public Set<PaymentMethod> paymentsAvailableTo(Set<PaymentMethod> clientPaymentMethods) {
+
+        return clientPaymentMethods.stream()
+                                   .filter(payment -> paymentMethods.contains(payment))
+                                   .collect(toSet());
+    }
 }
