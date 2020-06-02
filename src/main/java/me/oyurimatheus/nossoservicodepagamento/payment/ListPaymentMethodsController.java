@@ -1,5 +1,6 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ class ListPaymentMethodsController {
         this.fraudChecks = fraudChecks;
     }
 
+    @Cacheable(value = "paymentMethods", key = "#root.args[1]")
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
