@@ -26,7 +26,7 @@ class PaymentMethodsFactory {
 
 
     @Transactional
-    public Set<PaymentMethod> getServiceBased(Long restaurantId, String email) {
+    public Set<PaymentMethod> getPaymentMethods(Long restaurantId, String email) {
         UserFavoriteRestaurants cachedUser = getCachedUser(restaurantId, email);
 
         if (cachedUser.incrementAndGet() >= 10) {

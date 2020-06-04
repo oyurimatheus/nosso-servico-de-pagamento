@@ -3,7 +3,6 @@ package me.oyurimatheus.nossoservicodepagamento.payment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -25,7 +24,7 @@ class ListPaymentMethodsController {
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
 
-        Set<PaymentMethod> paymentMethodsAllowed = paymentMethodsFactory.getServiceBased(restaurantId, email);
+        Set<PaymentMethod> paymentMethodsAllowed = paymentMethodsFactory.getPaymentMethods(restaurantId, email);
         Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
 
         return ok(response);
