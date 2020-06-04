@@ -1,9 +1,9 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -12,28 +12,20 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/restaurants")
 class ListPaymentMethodsController {
 
-    private final RestaurantRepository restaurantRepository;
-    private final UserRepository userRepository;
-    private final Set<FraudCheck> fraudChecks;
+    private final PaymentMethodsFactory paymentMethodsFactory;
+    private final PaymentMethodsRepository paymentMethodsRepository;
 
-    ListPaymentMethodsController(RestaurantRepository restaurantRepository,
-                                 UserRepository userRepository,
-                                 Set<FraudCheck> fraudChecks) {
-        this.restaurantRepository = restaurantRepository;
-        this.userRepository = userRepository;
-        this.fraudChecks = fraudChecks;
+    ListPaymentMethodsController(PaymentMethodsFactory paymentMethodsFactory,
+                                 PaymentMethodsRepository paymentMethodsRepository) {
+        this.paymentMethodsFactory = paymentMethodsFactory;
+        this.paymentMethodsRepository = paymentMethodsRepository;
     }
 
-    @Cacheable(value = "paymentMethods", key = "#root.args[1]")
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
 
-        var restaurant = restaurantRepository.findById(restaurantId).get();
-        var client = userRepository.findByEmail(email).get();
-
-        Set<PaymentMethod> paymentMethodsAllowed = client.paymentMethodsTo(restaurant, fraudChecks);
-
+        Set<PaymentMethod> paymentMethodsAllowed = paymentMethodsFactory.getServiceBased(restaurantId, email);
         Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
 
         return ok(response);
