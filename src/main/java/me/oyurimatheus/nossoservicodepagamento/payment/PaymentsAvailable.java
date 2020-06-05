@@ -1,18 +1,11 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
-import org.springframework.util.Assert;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
-import static org.springframework.util.Assert.hasText;
 
 class PaymentsAvailable {
 
