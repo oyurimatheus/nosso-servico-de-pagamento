@@ -1,19 +1,20 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.support.atomic.RedisAtomicInteger;
 
 import java.io.Serializable;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
-@RedisHash(value = "usersFavoriteRestaurants", timeToLive = 3600 * 4)
+
+@RedisHash(value = "usersFavoriteRestaurants", timeToLive = 3600 * 4) // TTL 4h
 class UserFavoriteRestaurants implements Serializable {
 
     private String id;
     private Set<PaymentMethod> paymentMethods;
     // here we should use an atomicInteger because of concurrence
     private int count;
+    private String userEmail;
+    private long restaurantId;
 
     /**
      * @deprecated framework eyes only
@@ -21,8 +22,10 @@ class UserFavoriteRestaurants implements Serializable {
     @Deprecated
     UserFavoriteRestaurants() { }
 
-    public UserFavoriteRestaurants(String id) {
-        this.id = id;
+    public UserFavoriteRestaurants(String userEmail, long restaurantId) {
+        this.id = userEmail + restaurantId;
+        this.userEmail = userEmail;
+        this.restaurantId = restaurantId;
     }
 
     public Set<PaymentMethod> getPaymentMethods() {
@@ -35,5 +38,13 @@ class UserFavoriteRestaurants implements Serializable {
 
     public void updatePaymentMethods(Set<PaymentMethod> paymentMethods) {
         this.paymentMethods = paymentMethods;
+    }
+
+    public Long restaurantId() {
+        return restaurantId;
+    }
+
+    public String userEmail() {
+        return userEmail;
     }
 }

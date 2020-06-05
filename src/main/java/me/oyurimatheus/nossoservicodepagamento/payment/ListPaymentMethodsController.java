@@ -11,22 +11,40 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/restaurants")
 class ListPaymentMethodsController {
 
-    private final PaymentMethodsFactory paymentMethodsFactory;
-    private final PaymentMethodsRepository paymentMethodsRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final PaymentMethodCacheService paymentCache;
+    private final UserRepository userRepository;
+    private final Set<FraudCheck> fraudsChecking;
 
-    ListPaymentMethodsController(PaymentMethodsFactory paymentMethodsFactory,
-                                 PaymentMethodsRepository paymentMethodsRepository) {
-        this.paymentMethodsFactory = paymentMethodsFactory;
-        this.paymentMethodsRepository = paymentMethodsRepository;
+    public ListPaymentMethodsController(RestaurantRepository restaurantRepository,
+                                        PaymentMethodCacheService paymentCache,
+                                        UserRepository userRepository,
+                                        Set<FraudCheck> fraudsChecking) {
+        this.restaurantRepository = restaurantRepository;
+        this.paymentCache = paymentCache;
+        this.userRepository = userRepository;
+        this.fraudsChecking = fraudsChecking;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
 
-        Set<PaymentMethod> paymentMethodsAllowed = paymentMethodsFactory.getPaymentMethods(restaurantId, email);
-        Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
+        UserFavoriteRestaurants cachedUser = paymentCache.getCachedUser(restaurantId, email);
+
+        FindPaymentMethods searchPaymentInCache = new SearchPaymentMethodsInCache(cachedUser,
+                                                                                  restaurantRepository,
+                                                                                  userRepository,
+                                                                                  fraudsChecking);
+
+        Set<PaymentMethod> paymentMethods = searchPaymentInCache.findPaymentMethods();
+
+        cachedUser.updatePaymentMethods(paymentMethods);
+        paymentCache.updateCache(cachedUser);
+
+        Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
         return ok(response);
     }
+
 }
