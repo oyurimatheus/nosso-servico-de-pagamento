@@ -1,30 +1,30 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Set;
 
-class SearchPaymentMethodsInCache implements FindPaymentMethods {
+@Component
+class SearchPaymentMethodsInCache {
 
-    private UserFavoriteRestaurants cachedUser;
-    private FindPaymentMethods next;
+    private final PaymentMethodCacheService paymentCache;
+    private final SearchPaymentInDatabase searchPaymentInDatabase;
 
-    SearchPaymentMethodsInCache(UserFavoriteRestaurants cachedUser,
-                                RestaurantRepository restaurantRepository,
-                                UserRepository userRepository,
-                                Set<FraudCheck> fraudsChecking) {
-
-        this.cachedUser = cachedUser;
-        next = new SearchPaymentInDatabase(cachedUser,
-                                           restaurantRepository,
-                                           userRepository,
-                                           fraudsChecking);
+    SearchPaymentMethodsInCache(PaymentMethodCacheService paymentCache,
+                                SearchPaymentInDatabase searchPaymentInDatabase) {
+        this.paymentCache = paymentCache;
+        this.searchPaymentInDatabase = searchPaymentInDatabase;
     }
 
-    @Override
-    public Set<PaymentMethod> findPaymentMethods() {
+    public Set<PaymentMethod> findPaymentMethods(UserFavoriteRestaurants cachedUser) {
         if (cachedUser.incrementAndGet() >= 10) {
             return cachedUser.getPaymentMethods();
         }
 
-        return next.findPaymentMethods();
+        Set<PaymentMethod> paymentMethods = searchPaymentInDatabase.findPaymentMethods(cachedUser);
+        cachedUser.updatePaymentMethods(paymentMethods);
+        paymentCache.updateCache(cachedUser);
+
+        return paymentMethods;
     }
 }

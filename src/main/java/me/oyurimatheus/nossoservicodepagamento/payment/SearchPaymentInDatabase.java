@@ -1,27 +1,26 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Set;
 
-class SearchPaymentInDatabase implements FindPaymentMethods {
+@Component
+class SearchPaymentInDatabase {
 
-    private UserFavoriteRestaurants cachedUser;
     private RestaurantRepository restaurantRepository;
     private UserRepository userRepository;
     private Set<FraudCheck> fraudsChecking;
 
-    SearchPaymentInDatabase(UserFavoriteRestaurants cachedUser,
-                            RestaurantRepository restaurantRepository,
+    SearchPaymentInDatabase(RestaurantRepository restaurantRepository,
                             UserRepository userRepository,
                             Set<FraudCheck> fraudsChecking) {
 
-        this.cachedUser = cachedUser;
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.fraudsChecking = fraudsChecking;
     }
 
-    @Override
-    public Set<PaymentMethod> findPaymentMethods() {
+    public Set<PaymentMethod> findPaymentMethods(UserFavoriteRestaurants cachedUser) {
 
         var restaurant = restaurantRepository.findById(cachedUser.restaurantId()).get();
         var client = userRepository.findByEmail(cachedUser.userEmail()).get();

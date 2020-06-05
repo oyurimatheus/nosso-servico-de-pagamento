@@ -11,19 +11,13 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/restaurants")
 class ListPaymentMethodsController {
 
-    private final RestaurantRepository restaurantRepository;
     private final PaymentMethodCacheService paymentCache;
-    private final UserRepository userRepository;
-    private final Set<FraudCheck> fraudsChecking;
+    private final SearchPaymentMethodsInCache searchPaymentInCache;
 
-    public ListPaymentMethodsController(RestaurantRepository restaurantRepository,
-                                        PaymentMethodCacheService paymentCache,
-                                        UserRepository userRepository,
-                                        Set<FraudCheck> fraudsChecking) {
-        this.restaurantRepository = restaurantRepository;
+    public ListPaymentMethodsController(PaymentMethodCacheService paymentCache,
+                                        SearchPaymentMethodsInCache searchPaymentInCache) {
         this.paymentCache = paymentCache;
-        this.userRepository = userRepository;
-        this.fraudsChecking = fraudsChecking;
+        this.searchPaymentInCache = searchPaymentInCache;
     }
 
     @GetMapping("/{id}")
@@ -32,15 +26,7 @@ class ListPaymentMethodsController {
 
         UserFavoriteRestaurants cachedUser = paymentCache.getCachedUser(restaurantId, email);
 
-        FindPaymentMethods searchPaymentInCache = new SearchPaymentMethodsInCache(cachedUser,
-                                                                                  restaurantRepository,
-                                                                                  userRepository,
-                                                                                  fraudsChecking);
-
-        Set<PaymentMethod> paymentMethods = searchPaymentInCache.findPaymentMethods();
-
-        cachedUser.updatePaymentMethods(paymentMethods);
-        paymentCache.updateCache(cachedUser);
+        Set<PaymentMethod> paymentMethods = searchPaymentInCache.findPaymentMethods(cachedUser);
 
         Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
