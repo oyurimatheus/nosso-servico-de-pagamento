@@ -11,22 +11,32 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/restaurants")
 class ListPaymentMethodsController {
 
-    private final PaymentMethodCacheService paymentCache;
-    private final SearchPaymentMethodsInCache searchPaymentInCache;
+    private final PaymentMethodCacheService paymentCacheService;
+    private final SearchPaymentInDatabase searchPaymentInDatabase;
 
     public ListPaymentMethodsController(PaymentMethodCacheService paymentCache,
-                                        SearchPaymentMethodsInCache searchPaymentInCache) {
-        this.paymentCache = paymentCache;
-        this.searchPaymentInCache = searchPaymentInCache;
+                                        SearchPaymentInDatabase searchPaymentInDatabase) {
+        this.paymentCacheService = paymentCache;
+        this.searchPaymentInDatabase = searchPaymentInDatabase;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
 
-        UserFavoriteRestaurants cachedUser = paymentCache.getCachedUser(restaurantId, email);
+        UserFavoriteRestaurants cachedUser = paymentCacheService.getCachedUser(restaurantId, email);
 
-        Set<PaymentMethod> paymentMethods = searchPaymentInCache.findPaymentMethods(cachedUser);
+        if (cachedUser.incrementAndGet() >= 10) {
+            Set<PaymentMethod> paymentMethods = cachedUser.getPaymentMethods();
+            Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
+
+            return ok(response);
+        }
+
+        Set<PaymentMethod> paymentMethods = searchPaymentInDatabase.findPaymentMethods(cachedUser);
+
+        cachedUser.updatePaymentMethods(paymentMethods);
+        paymentCacheService.updateCache(cachedUser);
 
         Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 

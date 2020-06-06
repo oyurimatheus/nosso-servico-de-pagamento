@@ -7,9 +7,9 @@ import java.util.Set;
 @Component
 class SearchPaymentInDatabase {
 
-    private RestaurantRepository restaurantRepository;
-    private UserRepository userRepository;
-    private Set<FraudCheck> fraudsChecking;
+    private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
+    private final Set<FraudCheck> fraudsChecking;
 
     SearchPaymentInDatabase(RestaurantRepository restaurantRepository,
                             UserRepository userRepository,
