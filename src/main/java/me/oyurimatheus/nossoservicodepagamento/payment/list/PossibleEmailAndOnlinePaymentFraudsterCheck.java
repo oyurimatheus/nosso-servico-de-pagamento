@@ -1,11 +1,12 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.Set;
 
-import static me.oyurimatheus.nossoservicodepagamento.payment.Fraud.FraudType.EMAIL;
+import static me.oyurimatheus.nossoservicodepagamento.payment.list.Fraud.FraudType.EMAIL;
 
 @Component
 class PossibleEmailAndOnlinePaymentFraudsterCheck implements FraudCheck {

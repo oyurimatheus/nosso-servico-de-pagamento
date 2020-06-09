@@ -1,5 +1,6 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

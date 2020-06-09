@@ -1,4 +1,6 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
+
+import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
 
 import java.util.Set;
 

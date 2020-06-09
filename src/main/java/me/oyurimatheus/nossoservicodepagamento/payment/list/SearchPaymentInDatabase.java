@@ -1,5 +1,8 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
+import me.oyurimatheus.nossoservicodepagamento.payment.RestaurantRepository;
+import me.oyurimatheus.nossoservicodepagamento.payment.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

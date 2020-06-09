@@ -1,6 +1,8 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
 
-class Fraud {
+import me.oyurimatheus.nossoservicodepagamento.payment.User;
+
+public class Fraud {
 
 
     private final User client;
