@@ -11,29 +11,36 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/restaurants")
 class ListPaymentMethodsController {
 
-    private final RestaurantRepository restaurantRepository;
-    private final UserRepository userRepository;
-    private final Set<FraudCheck> fraudChecks;
+    private final PaymentMethodCacheService paymentCacheService;
+    private final SearchPaymentInDatabase searchPaymentInDatabase;
 
-    ListPaymentMethodsController(RestaurantRepository restaurantRepository,
-                                 UserRepository userRepository,
-                                 Set<FraudCheck> fraudChecks) {
-        this.restaurantRepository = restaurantRepository;
-        this.userRepository = userRepository;
-        this.fraudChecks = fraudChecks;
+    public ListPaymentMethodsController(PaymentMethodCacheService paymentCache,
+                                        SearchPaymentInDatabase searchPaymentInDatabase) {
+        this.paymentCacheService = paymentCache;
+        this.searchPaymentInDatabase = searchPaymentInDatabase;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listPaymentMethodsToUser(@PathVariable("id") Long restaurantId,
                                                       @RequestParam("user_email") String email) {
 
-        var restaurant = restaurantRepository.findById(restaurantId).get();
-        var client = userRepository.findByEmail(email).get();
+        UserFavoriteRestaurants cachedUser = paymentCacheService.getCachedUser(restaurantId, email);
 
-        Set<PaymentMethod> paymentMethodsAllowed = client.paymentMethodsTo(restaurant, fraudChecks);
+        if (cachedUser.incrementAndGet() >= 10) {
+            Set<PaymentMethod> paymentMethods = cachedUser.getPaymentMethods();
+            Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
-        Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethodsAllowed);
+            return ok(response);
+        }
+
+        Set<PaymentMethod> paymentMethods = searchPaymentInDatabase.findPaymentMethods(cachedUser);
+
+        cachedUser.updatePaymentMethods(paymentMethods);
+        paymentCacheService.updateCache(cachedUser);
+
+        Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
         return ok(response);
     }
+
 }

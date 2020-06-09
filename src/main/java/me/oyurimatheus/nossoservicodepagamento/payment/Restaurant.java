@@ -36,14 +36,6 @@ class Restaurant {
     @Deprecated
     Restaurant() { }
 
-    public Set<PaymentMethod> paymentsAllowedTo(PaymentsAvailable paymentsAvailable) {
-        if (!paymentsAvailable.hasFrauds()) {
-            return paymentsAvailable.availablePaymentMethods();
-        }
-
-        return paymentsAvailable.offlinePaymentMethods();
-    }
-
     public Set<PaymentMethod> paymentsAvailableTo(Set<PaymentMethod> clientPaymentMethods) {
 
         return clientPaymentMethods.stream()
