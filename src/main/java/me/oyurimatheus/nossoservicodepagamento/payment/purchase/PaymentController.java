@@ -21,18 +21,18 @@ class PaymentController {
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentProcessor paymentProcessor;
-    private final Set<FraudCheck> fraudChecking;
+    private final PaymentMethodChosenValidator paymentMethodChosenValidator;
 
     PaymentController(RestaurantRepository restaurantRepository,
                       UserRepository userRepository,
                       PaymentRepository paymentRepository,
                       PaymentProcessor paymentProcessor,
-                      Set<FraudCheck> fraudChecking) {
+                      PaymentMethodChosenValidator paymentMethodChosenValidator) {
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
         this.paymentProcessor = paymentProcessor;
-        this.fraudChecking = fraudChecking;
+        this.paymentMethodChosenValidator = paymentMethodChosenValidator;
     }
 
     @PostMapping
@@ -51,7 +51,8 @@ class PaymentController {
 
     @InitBinder(value = { "paymentRequest" })
     void initBinder(WebDataBinder binder) {
-        binder.addValidators(new PaymentMethodChoseValidator(restaurantRepository, userRepository, fraudChecking),
+
+        binder.addValidators(paymentMethodChosenValidator,
                              new CreditCardPaymentCheckValidator());
     }
 

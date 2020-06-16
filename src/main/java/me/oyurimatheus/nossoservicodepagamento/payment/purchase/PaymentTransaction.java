@@ -1,7 +1,9 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
+import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Table(name = "payment_transactions")
@@ -16,6 +18,8 @@ class PaymentTransaction {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    @NotNull
+    @Enumerated(STRING)
     private PaymentTransactionStatus status;
 
     /**

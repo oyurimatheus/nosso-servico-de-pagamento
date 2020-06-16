@@ -76,10 +76,10 @@ class PaymentRequest {
         Optional<User> user = findUserById.apply(userEmail);
 
         if (paymentMethod == CREDIT_CARD) {
-            return new Payment(restaurant.get(), user.get(), total, purchaseId, country, creditCardNumber);
+            return Payment.makeOnlinePayment(restaurant.get(), user.get(), total, purchaseId, country, creditCardNumber);
         }
 
-        return new Payment(restaurant.get(), user.get(), total, purchaseId, country, paymentMethod);
+        return Payment.makeOfflinePayment(restaurant.get(), user.get(), total, purchaseId, country, paymentMethod);
     }
 
     public boolean isOnline() {
@@ -88,5 +88,9 @@ class PaymentRequest {
 
     public boolean hasCreditCardNumber() {
         return creditCardNumber != null && !creditCardNumber.isBlank();
+    }
+
+    public boolean isPaymentOnlineInvalid() {
+        return isOnline() && !hasCreditCardNumber();
     }
 }

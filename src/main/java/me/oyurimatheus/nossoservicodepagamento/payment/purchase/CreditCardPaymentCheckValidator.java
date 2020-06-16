@@ -14,7 +14,7 @@ public class CreditCardPaymentCheckValidator implements Validator {
     public void validate(Object target, Errors errors) {
         PaymentRequest request = (PaymentRequest) target;
 
-        if (request.isOnline() && !request.hasCreditCardNumber()) {
+        if (request.isPaymentOnlineInvalid()) {
             errors.rejectValue("creditCardNumber", "payment.online.invalid", "Online payment method must have credit card number");
         }
     }

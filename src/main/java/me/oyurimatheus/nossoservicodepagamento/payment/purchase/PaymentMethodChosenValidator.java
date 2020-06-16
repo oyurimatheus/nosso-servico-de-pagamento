@@ -2,21 +2,23 @@ package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
 import me.oyurimatheus.nossoservicodepagamento.payment.*;
 import me.oyurimatheus.nossoservicodepagamento.payment.list.FraudCheck;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Optional;
 import java.util.Set;
 
-class PaymentMethodChoseValidator implements Validator {
+@Component
+class PaymentMethodChosenValidator implements Validator {
 
     private RestaurantRepository restaurantRepository;
     private UserRepository userRepository;
     private Set<FraudCheck> fraudChecking;
 
-    public PaymentMethodChoseValidator(RestaurantRepository restaurantRepository,
-                                       UserRepository userRepository,
-                                       Set<FraudCheck> fraudChecking) {
+    public PaymentMethodChosenValidator(RestaurantRepository restaurantRepository,
+                                        UserRepository userRepository,
+                                        Set<FraudCheck> fraudChecking) {
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.fraudChecking = fraudChecking;
