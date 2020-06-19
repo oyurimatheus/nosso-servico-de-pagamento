@@ -1,4 +1,4 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
 
 import org.springframework.stereotype.Service;
 

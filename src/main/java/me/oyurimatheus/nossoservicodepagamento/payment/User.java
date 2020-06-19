@@ -1,5 +1,7 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.list.FraudCheck;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
@@ -13,7 +15,7 @@ import static me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod.CRED
 
 @Table(name = "users")
 @Entity
-class User {
+public class User {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

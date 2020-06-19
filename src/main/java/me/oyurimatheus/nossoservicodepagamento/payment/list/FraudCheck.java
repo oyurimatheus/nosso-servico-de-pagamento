@@ -1,8 +1,10 @@
-package me.oyurimatheus.nossoservicodepagamento.payment;
+package me.oyurimatheus.nossoservicodepagamento.payment.list;
+
+import me.oyurimatheus.nossoservicodepagamento.payment.User;
 
 import java.util.Optional;
 
-interface FraudCheck {
+public interface FraudCheck {
 
     /**
      *

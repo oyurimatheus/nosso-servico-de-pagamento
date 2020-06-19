@@ -1,6 +1,6 @@
 package me.oyurimatheus.nossoservicodepagamento.payment;
 
-enum PaymentMethod {
+public enum PaymentMethod {
 
     CREDIT_CARD(true, "A credit card used to pay your purchases online or in local"),
     CASH(false, "The good old money"),
@@ -19,7 +19,7 @@ enum PaymentMethod {
      *
      * @return a description of payment method chosen
      */
-    String description() {
+    public String description() {
         return description;
     };
 
