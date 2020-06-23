@@ -2,14 +2,12 @@ package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
 import me.oyurimatheus.nossoservicodepagamento.payment.RestaurantRepository;
 import me.oyurimatheus.nossoservicodepagamento.payment.UserRepository;
-import me.oyurimatheus.nossoservicodepagamento.payment.list.FraudCheck;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
 

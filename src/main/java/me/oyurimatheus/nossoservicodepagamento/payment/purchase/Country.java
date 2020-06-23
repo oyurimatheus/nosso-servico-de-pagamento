@@ -1,6 +1,6 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
-enum Country {
+public enum Country {
 
     BR,
     USA,

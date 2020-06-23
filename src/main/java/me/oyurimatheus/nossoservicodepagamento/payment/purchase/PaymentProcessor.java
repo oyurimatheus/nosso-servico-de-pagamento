@@ -1,26 +1,36 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.PaymentGateway;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 class PaymentProcessor {
 
     private final PaymentTransactionRepository paymentTransactionRepository;
+    private final Set<PaymentGateway> gateways;
 
-    PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository) {
+    PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository,
+                     Set<PaymentGateway> gateways) {
         this.paymentTransactionRepository = paymentTransactionRepository;
+        this.gateways = gateways;
     }
 
     public PaymentTransaction process(Payment payment) {
 
         if (!payment.isOnline()) {
             verifyTransactionAlreadyExist(payment);
+
+            PaymentTransaction transaction = PaymentTransaction.offline(payment);
+            paymentTransactionRepository.save(transaction);
+            return transaction;
         }
 
-        PaymentTransaction transaction = new PaymentTransaction(payment);
+        OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(payment, gateways);
 
+        PaymentTransaction transaction = paymentOrder.tryToPay(payment);
         paymentTransactionRepository.save(transaction);
 
         return transaction;
