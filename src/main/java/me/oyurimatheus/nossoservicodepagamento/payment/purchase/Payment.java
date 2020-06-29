@@ -13,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
 import static javax.persistence.EnumType.STRING;
@@ -182,14 +183,13 @@ public class Payment {
         return total;
     }
 
-    public String getCreditCardNumber() {
-        return creditCardNumber;
+    public Optional<String> getCreditCardNumber() {
+        return Optional.ofNullable(creditCardNumber);
     }
 
     public CreditCardFlag cardFlag() {
-        if (creditCardNumber == null) {
-            throw new IllegalStateException("Cannot get a card flag from a payment without credit card number");
-        }
+        Assert.notNull(creditCardNumber, "Cannot get a card flag from a payment without credit card number");
+
         return CreditCardFlag.flagFrom(creditCardNumber);
     }
 }

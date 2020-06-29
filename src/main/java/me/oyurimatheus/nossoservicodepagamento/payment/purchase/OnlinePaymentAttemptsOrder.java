@@ -12,9 +12,11 @@ import static java.util.stream.Collectors.toList;
 
 class OnlinePaymentAttemptsOrder {
 
+    private Payment payment;
     private List<PaymentGateway> gatewayOrder;
 
-    private OnlinePaymentAttemptsOrder(List<PaymentGateway> gatewayOrder) {
+    private OnlinePaymentAttemptsOrder(Payment payment, List<PaymentGateway> gatewayOrder) {
+        this.payment = payment;
         this.gatewayOrder = gatewayOrder;
     }
 
@@ -25,10 +27,10 @@ class OnlinePaymentAttemptsOrder {
                                                     .sorted(Comparator.comparing(gateway -> gateway.cost(payment)))
                                                     .collect(toList());
 
-        return new OnlinePaymentAttemptsOrder(gatewayOrder);
+        return new OnlinePaymentAttemptsOrder(payment, gatewayOrder);
     }
 
-    public PaymentTransaction tryToPay(Payment payment) {
+    public PaymentTransaction tryToPay() {
         Assert.notNull(payment, "payment must not be null");
 
         for (PaymentGateway gateway: gatewayOrder) {

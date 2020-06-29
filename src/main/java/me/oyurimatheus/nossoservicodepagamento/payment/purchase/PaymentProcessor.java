@@ -30,7 +30,7 @@ class PaymentProcessor {
 
         OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(payment, gateways);
 
-        PaymentTransaction transaction = paymentOrder.tryToPay(payment);
+        PaymentTransaction transaction = paymentOrder.tryToPay();
         paymentTransactionRepository.save(transaction);
 
         return transaction;

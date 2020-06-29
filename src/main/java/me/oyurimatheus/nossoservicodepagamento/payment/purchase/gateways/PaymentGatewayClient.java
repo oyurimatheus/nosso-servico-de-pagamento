@@ -39,10 +39,12 @@ class PaymentGatewayClient {
 
         public PaymentGatewayRequest(Payment payment) {
             Assert.notNull(payment, "payment must not be null");
+            Assert.isTrue(payment.getCreditCardNumber().isPresent(), "credit card number must be present");
 
             this.value = payment.getTotal();
-            this.creditCardNumber = payment.getCreditCardNumber();
-            this.cardFlag = CreditCardFlag.flagFrom(payment.getCreditCardNumber());
+            String creditCardNumber = payment.getCreditCardNumber().get();
+            this.creditCardNumber = creditCardNumber;
+            this.cardFlag = CreditCardFlag.flagFrom(creditCardNumber);
         }
 
         public BigDecimal getValue() {
