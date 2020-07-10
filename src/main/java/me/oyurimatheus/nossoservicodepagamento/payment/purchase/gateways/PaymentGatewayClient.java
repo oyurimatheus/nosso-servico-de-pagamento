@@ -15,7 +15,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
 
 @Component
-class PaymentGatewayClient {
+public class PaymentGatewayClient {
 
     boolean pay(URI baseUri, PaymentGatewayRequest request) {
 

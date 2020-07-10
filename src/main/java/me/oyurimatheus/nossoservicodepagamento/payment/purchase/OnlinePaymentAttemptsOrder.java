@@ -1,45 +1,46 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
-import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.PaymentGateway;
-import org.springframework.util.Assert;
+import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.PaymentAttempt;
+import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.PaymentGatewayClient;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
 class OnlinePaymentAttemptsOrder {
 
-    private Payment payment;
-    private List<PaymentGateway> gatewayOrder;
+    private List<PaymentAttempt> paymentAttemptOrder;
+    private PaymentGatewayClient client;
 
-    private OnlinePaymentAttemptsOrder(Payment payment, List<PaymentGateway> gatewayOrder) {
-        this.payment = payment;
-        this.gatewayOrder = gatewayOrder;
+    private OnlinePaymentAttemptsOrder(List<PaymentAttempt> paymentAttemptOrder, PaymentGatewayClient client) {
+        this.paymentAttemptOrder = paymentAttemptOrder;
+        this.client = client;
     }
 
-    public static OnlinePaymentAttemptsOrder makeGatewaysAttemptsOrderTo(Payment payment, Set<PaymentGateway> gateways) {
+    public static OnlinePaymentAttemptsOrder makeGatewaysAttemptsOrderTo(PaymentGatewayClient client,
+                                                                         List<PaymentAttempt> attempts) {
 
-        List<PaymentGateway> gatewayOrder = gateways.stream()
-                                                    .filter(gateway -> gateway.accept(payment))
-                                                    .sorted(Comparator.comparing(gateway -> gateway.cost(payment)))
+
+
+        List<PaymentAttempt> gatewayOrder = attempts.stream()
+                                                    .filter(PaymentAttempt::accept)
+                                                    .sorted(Comparator.comparing(PaymentAttempt::cost))
                                                     .collect(toList());
 
-        return new OnlinePaymentAttemptsOrder(payment, gatewayOrder);
+        return new OnlinePaymentAttemptsOrder(gatewayOrder, client);
     }
 
     public PaymentTransaction tryToPay() {
-        Assert.notNull(payment, "payment must not be null");
-
-        for (PaymentGateway gateway: gatewayOrder) {
-            Optional<PaymentTransaction> possibleTransaction = gateway.pay(payment);
+        for (PaymentAttempt attempt: paymentAttemptOrder) {
+            Optional<PaymentTransaction> possibleTransaction = attempt.pay(client);
             if (possibleTransaction.isPresent()) {
                 return possibleTransaction.get();
             }
         }
 
-        return PaymentTransaction.failedOnlinePayment(payment);
+        PaymentAttempt attempt = paymentAttemptOrder.get(0);
+        return PaymentTransaction.failedOnlinePayment(attempt.getPayment());
     }
 }

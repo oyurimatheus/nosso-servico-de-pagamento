@@ -1,21 +1,19 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
-import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.PaymentGateway;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 class PaymentProcessor {
 
     private final PaymentTransactionRepository paymentTransactionRepository;
-    private final Set<PaymentGateway> gateways;
+    private final OnlinePaymentProcessor onlinePaymentProcessor;
 
-    PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository,
-                     Set<PaymentGateway> gateways) {
+    public PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository,
+                            OnlinePaymentProcessor onlinePaymentProcessor) {
         this.paymentTransactionRepository = paymentTransactionRepository;
-        this.gateways = gateways;
+        this.onlinePaymentProcessor = onlinePaymentProcessor;
     }
 
     public PaymentTransaction process(Payment payment) {
@@ -28,9 +26,7 @@ class PaymentProcessor {
             return transaction;
         }
 
-        OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(payment, gateways);
-
-        PaymentTransaction transaction = paymentOrder.tryToPay();
+        PaymentTransaction transaction = onlinePaymentProcessor.tryToPay(payment);
         paymentTransactionRepository.save(transaction);
 
         return transaction;
