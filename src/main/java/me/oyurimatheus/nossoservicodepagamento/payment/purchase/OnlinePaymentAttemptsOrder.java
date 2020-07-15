@@ -13,23 +13,28 @@ class OnlinePaymentAttemptsOrder {
 
     private List<PaymentAttempt> paymentAttemptOrder;
     private PaymentGatewayClient client;
+    private Payment payment;
 
-    private OnlinePaymentAttemptsOrder(List<PaymentAttempt> paymentAttemptOrder, PaymentGatewayClient client) {
+    private OnlinePaymentAttemptsOrder(List<PaymentAttempt> paymentAttemptOrder,
+                                       PaymentGatewayClient client,
+                                       Payment payment) {
         this.paymentAttemptOrder = paymentAttemptOrder;
         this.client = client;
+        this.payment = payment;
     }
 
     public static OnlinePaymentAttemptsOrder makeGatewaysAttemptsOrderTo(PaymentGatewayClient client,
-                                                                         List<PaymentAttempt> attempts) {
+                                                                         PaymentAttemptFactory factory,
+                                                                         Payment payment) {
 
-
+        List<PaymentAttempt> attempts = factory.makeAttempts(payment);
 
         List<PaymentAttempt> gatewayOrder = attempts.stream()
                                                     .filter(PaymentAttempt::accept)
                                                     .sorted(Comparator.comparing(PaymentAttempt::cost))
                                                     .collect(toList());
 
-        return new OnlinePaymentAttemptsOrder(gatewayOrder, client);
+        return new OnlinePaymentAttemptsOrder(gatewayOrder, client, payment);
     }
 
     public PaymentTransaction tryToPay() {
@@ -40,7 +45,6 @@ class OnlinePaymentAttemptsOrder {
             }
         }
 
-        PaymentAttempt attempt = paymentAttemptOrder.get(0);
-        return PaymentTransaction.failedOnlinePayment(attempt.getPayment());
+        return PaymentTransaction.failedOnlinePayment(payment);
     }
 }

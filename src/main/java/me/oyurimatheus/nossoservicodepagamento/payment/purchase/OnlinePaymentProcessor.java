@@ -20,9 +20,7 @@ public class OnlinePaymentProcessor {
     }
 
     public PaymentTransaction tryToPay(Payment payment) {
-        List<PaymentAttempt> paymentAttempts = paymentAttemptFactory.makeAttempts(payment);
-
-        OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(client, paymentAttempts);
+        OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(client, paymentAttemptFactory, payment);
 
         return paymentOrder.tryToPay();
     }
