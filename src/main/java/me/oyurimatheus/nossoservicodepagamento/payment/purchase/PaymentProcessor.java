@@ -8,19 +8,25 @@ import java.util.Optional;
 class PaymentProcessor {
 
     private final PaymentTransactionRepository paymentTransactionRepository;
+    private final OnlinePaymentProcessor onlinePaymentProcessor;
 
-    PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository) {
+    public PaymentProcessor(PaymentTransactionRepository paymentTransactionRepository,
+                            OnlinePaymentProcessor onlinePaymentProcessor) {
         this.paymentTransactionRepository = paymentTransactionRepository;
+        this.onlinePaymentProcessor = onlinePaymentProcessor;
     }
 
     public PaymentTransaction process(Payment payment) {
 
         if (!payment.isOnline()) {
             verifyTransactionAlreadyExist(payment);
+
+            PaymentTransaction transaction = PaymentTransaction.offline(payment);
+            paymentTransactionRepository.save(transaction);
+            return transaction;
         }
 
-        PaymentTransaction transaction = new PaymentTransaction(payment);
-
+        PaymentTransaction transaction = onlinePaymentProcessor.tryToPay(payment);
         paymentTransactionRepository.save(transaction);
 
         return transaction;

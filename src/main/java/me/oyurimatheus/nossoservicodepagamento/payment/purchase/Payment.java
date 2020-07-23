@@ -3,6 +3,7 @@ package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
 import me.oyurimatheus.nossoservicodepagamento.payment.Restaurant;
 import me.oyurimatheus.nossoservicodepagamento.payment.User;
+import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.CreditCardFlag;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
 import static javax.persistence.EnumType.STRING;
@@ -23,7 +25,7 @@ import static org.springframework.util.Assert.*;
 
 @Table(name = "payments")
 @Entity
-class Payment {
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -175,5 +177,19 @@ class Payment {
 
     public String getPurchaseId() {
         return purchaseId;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public Optional<String> getCreditCardNumber() {
+        return Optional.ofNullable(creditCardNumber);
+    }
+
+    public CreditCardFlag cardFlag() {
+        Assert.notNull(creditCardNumber, "Cannot get a card flag from a payment without credit card number");
+
+        return CreditCardFlag.flagFrom(creditCardNumber);
     }
 }

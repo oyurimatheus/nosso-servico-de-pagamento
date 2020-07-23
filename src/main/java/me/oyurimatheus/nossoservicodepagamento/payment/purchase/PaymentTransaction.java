@@ -5,10 +5,11 @@ import javax.validation.constraints.NotNull;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
+import static me.oyurimatheus.nossoservicodepagamento.payment.purchase.PaymentTransactionStatus.*;
 
 @Table(name = "payment_transactions")
 @Entity
-class PaymentTransaction {
+public class PaymentTransaction {
 
     @GeneratedValue(strategy = IDENTITY)
     @Id
@@ -28,10 +29,21 @@ class PaymentTransaction {
     @Deprecated
     private PaymentTransaction() { }
 
-    PaymentTransaction(Payment payment) {
-
+    private PaymentTransaction(Payment payment, PaymentTransactionStatus status) {
         this.payment = payment;
-        this.status = PaymentTransactionStatus.transactionalStatusOf(payment);
+        this.status = status;
+    }
+
+    public static PaymentTransaction offline(Payment payment) {
+        return new PaymentTransaction(payment, ESPERANDO_OFFLINE);
+    }
+
+    public static PaymentTransaction online(Payment payment) {
+        return new PaymentTransaction(payment, CONCLUIDA);
+    }
+
+    public static PaymentTransaction failedOnlinePayment(Payment payment) {
+        return new PaymentTransaction(payment, FALHA);
     }
 
     public PaymentTransactionStatus getStatus() {
