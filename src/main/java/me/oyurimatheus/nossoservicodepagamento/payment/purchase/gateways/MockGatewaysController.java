@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.unprocessableEntity;
 
 @RestController
 @RequestMapping("/gateways/pay")
@@ -23,6 +22,6 @@ class MockGatewaysController {
 
         LOG.info("[PAYMENT] [RECEIVED] Payment received {}", request);
 
-        return unprocessableEntity().build();
+        return ok().build();
     }
 }
