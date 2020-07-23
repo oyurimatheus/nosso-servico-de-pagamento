@@ -37,9 +37,9 @@ class OnlinePaymentAttemptsOrder {
         return new OnlinePaymentAttemptsOrder(gatewayOrder, client, payment);
     }
 
-    public PaymentTransaction tryToPay() {
+    public PaymentTransaction tryToPayAsync() {
         for (PaymentAttempt attempt: paymentAttemptOrder) {
-            Optional<PaymentTransaction> possibleTransaction = attempt.pay(client);
+            Optional<PaymentTransaction> possibleTransaction = attempt.payAsync(client);
             if (possibleTransaction.isPresent()) {
                 return possibleTransaction.get();
             }

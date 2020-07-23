@@ -5,11 +5,15 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.StringJoiner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
@@ -17,12 +21,18 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class PaymentGatewayClient {
 
-    boolean pay(URI baseUri, PaymentGatewayRequest request) {
+    boolean payAsync(URI baseUri, PaymentGatewayRequest request) {
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class);
+        CompletableFuture<ResponseEntity<String>> responseFuture = CompletableFuture.supplyAsync(() -> restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class));
 
-        return response.getStatusCode() == OK;
+        try {
+            ResponseEntity<String> response = responseFuture.join();
+            return response.getStatusCode() == OK;
+        } catch (CompletionException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     static class PaymentGatewayRequest {

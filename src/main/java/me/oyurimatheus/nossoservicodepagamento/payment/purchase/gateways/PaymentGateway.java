@@ -1,6 +1,5 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways;
 
-import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Country;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Payment;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.PaymentTransaction;
@@ -10,6 +9,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -53,12 +53,13 @@ class PaymentGateway {
     @Deprecated
     private PaymentGateway() { }
 
-    public Optional<PaymentTransaction> pay(PaymentGatewayClient client, Payment payment) {
+    public Optional<PaymentTransaction> payAsync(PaymentGatewayClient client, Payment payment) {
         if (!accept(payment)) {
             throw new IllegalArgumentException("this gateway does not accept this payment");
         }
 
-        boolean paymentSuccessful = client.pay(URI.create(gatewayUri), new PaymentGatewayClient.PaymentGatewayRequest(payment));
+
+        boolean paymentSuccessful = client.payAsync(URI.create(gatewayUri), new PaymentGatewayClient.PaymentGatewayRequest(payment));
         if (paymentSuccessful) {
             return Optional.of(PaymentTransaction.online(payment));
         }
