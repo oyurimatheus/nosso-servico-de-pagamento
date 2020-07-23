@@ -41,7 +41,7 @@ INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type,
 INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type, gateway_uri, country) VALUES (3, 'Seya', 5, 'CASH', 'http://localhost:8080/gateways/pay', 'BR');
 INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type, gateway_uri, country) VALUES (4, 'Shiryu', 3.5, 'CASH', 'http://localhost:8080/gateways/pay', 'BR');
 INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type, gateway_uri, country) VALUES (5, 'Shun', 4, 'CASH', 'http://localhost:8080/gateways/pay', 'BR');
-INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type, gateway_uri, country) VALUES (6, 'Tango', 5), 'CASH', 'http://localhost:8080/gateways/pay', 'ARG';
+INSERT INTO payment_gateways (payment_gateway_id, gateway_name, fare, fare_type, gateway_uri, country) VALUES (6, 'Tango', 5, 'CASH', 'http://localhost:8080/gateways/pay', 'ARG');
 
 INSERT INTO payment_gateways_cards(card_flag, payment_gateway_id) VALUES ('VISA', 1);
 INSERT INTO payment_gateways_cards(card_flag, payment_gateway_id) VALUES ('MASTERCARD', 1);
