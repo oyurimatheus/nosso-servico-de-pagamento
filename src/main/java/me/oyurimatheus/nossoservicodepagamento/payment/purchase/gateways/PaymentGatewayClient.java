@@ -43,7 +43,7 @@ public class PaymentGatewayClient {
         return new RestTemplate(clientHttpRequestFactory);
     }
 
-    boolean payAsync(URI baseUri, PaymentGatewayRequest request) {
+    boolean pay(URI baseUri, PaymentGatewayRequest request) {
 
         RestTemplate restTemplate = makeRestTemplate();
 

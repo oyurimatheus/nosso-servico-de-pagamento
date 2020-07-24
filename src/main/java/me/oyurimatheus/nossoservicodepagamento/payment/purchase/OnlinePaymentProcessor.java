@@ -18,6 +18,6 @@ public class OnlinePaymentProcessor {
     public PaymentTransaction tryToPay(Payment payment) {
         OnlinePaymentAttemptsOrder paymentOrder = OnlinePaymentAttemptsOrder.makeGatewaysAttemptsOrderTo(client, paymentAttemptFactory, payment);
 
-        return paymentOrder.tryToPayAsync();
+        return paymentOrder.tryToPay();
     }
 }

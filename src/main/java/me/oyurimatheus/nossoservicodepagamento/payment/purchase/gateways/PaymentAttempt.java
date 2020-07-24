@@ -27,8 +27,8 @@ public class PaymentAttempt {
         return gateway.cost(payemnt);
     }
 
-    public Optional<PaymentTransaction> payAsync(PaymentGatewayClient client) {
-        return gateway.payAsync(client, payemnt);
+    public Optional<PaymentTransaction> pay(PaymentGatewayClient client) {
+        return gateway.pay(client, payemnt);
     }
 
     public Payment getPayment() {
