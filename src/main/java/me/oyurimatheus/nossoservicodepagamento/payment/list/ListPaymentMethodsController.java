@@ -31,7 +31,7 @@ class ListPaymentMethodsController {
             Set<PaymentMethod> paymentMethods = cachedUser.getPaymentMethods();
             Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
-            return ok(response);
+            return ok().header("Cache-Control", "private", "max-age=14400").body(response);
         }
 
         Set<PaymentMethod> paymentMethods = searchPaymentInDatabase.findPaymentMethods(cachedUser);
