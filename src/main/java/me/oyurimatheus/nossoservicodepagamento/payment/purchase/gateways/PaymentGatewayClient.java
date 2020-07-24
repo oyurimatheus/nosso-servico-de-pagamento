@@ -1,19 +1,22 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways;
 
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Payment;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.StringJoiner;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
@@ -21,16 +24,34 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class PaymentGatewayClient {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PaymentGatewayClient.class);
+
+    // timeout in millis (maybe get from properties in future)
+    private static final int REQUEST_TIMEOUT = 2000;
+
+    private RestTemplate makeRestTemplate() {
+        RequestConfig config = RequestConfig.custom()
+                                            .setConnectTimeout(REQUEST_TIMEOUT)
+                                            .setConnectionRequestTimeout(REQUEST_TIMEOUT)
+                                            .setSocketTimeout(REQUEST_TIMEOUT)
+                                            .build();
+        CloseableHttpClient client = HttpClientBuilder.create()
+                                                      .setDefaultRequestConfig(config)
+                                                      .build();
+
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(client);
+        return new RestTemplate(clientHttpRequestFactory);
+    }
+
     boolean payAsync(URI baseUri, PaymentGatewayRequest request) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        CompletableFuture<ResponseEntity<String>> responseFuture = CompletableFuture.supplyAsync(() -> restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class));
+        RestTemplate restTemplate = makeRestTemplate();
 
         try {
-            ResponseEntity<String> response = responseFuture.join();
+            ResponseEntity<String> response = restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class);
             return response.getStatusCode() == OK;
-        } catch (CompletionException e) {
-            e.printStackTrace();
+        } catch (ResourceAccessException e) {
+            LOG.error("Error: {}. Failed to get service {}", e.getCause(), baseUri);
             return false;
         }
     }
