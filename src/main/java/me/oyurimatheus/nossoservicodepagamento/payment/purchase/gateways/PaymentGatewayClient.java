@@ -1,14 +1,10 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways;
 
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Payment;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.client.ResourceAccessException;
@@ -25,27 +21,15 @@ import static org.springframework.http.HttpStatus.OK;
 public class PaymentGatewayClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(PaymentGatewayClient.class);
+    private PaymentGatewayClientFactory paymentGatewayClientFactory;
 
-    // timeout in millis (maybe get from properties in future)
-    private static final int REQUEST_TIMEOUT = 2000;
-
-    private RestTemplate makeRestTemplate() {
-        RequestConfig config = RequestConfig.custom()
-                                            .setConnectTimeout(REQUEST_TIMEOUT)
-                                            .setConnectionRequestTimeout(REQUEST_TIMEOUT)
-                                            .setSocketTimeout(REQUEST_TIMEOUT)
-                                            .build();
-        CloseableHttpClient client = HttpClientBuilder.create()
-                                                      .setDefaultRequestConfig(config)
-                                                      .build();
-
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(client);
-        return new RestTemplate(clientHttpRequestFactory);
+    PaymentGatewayClient(PaymentGatewayClientFactory paymentGatewayClientFactory) {
+        this.paymentGatewayClientFactory = paymentGatewayClientFactory;
     }
 
     boolean pay(URI baseUri, PaymentGatewayRequest request) {
 
-        RestTemplate restTemplate = makeRestTemplate();
+        RestTemplate restTemplate = paymentGatewayClientFactory.getRestTemplate();
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class);

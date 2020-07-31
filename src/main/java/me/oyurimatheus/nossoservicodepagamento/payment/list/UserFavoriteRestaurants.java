@@ -6,8 +6,10 @@ import org.springframework.data.redis.core.RedisHash;
 import java.io.Serializable;
 import java.util.Set;
 
+import static me.oyurimatheus.nossoservicodepagamento.payment.list.CacheProps.DEFAULT_CACHE_TIME;
 
-@RedisHash(value = "usersFavoriteRestaurants", timeToLive = 3600 * 4) // TTL 4h
+
+@RedisHash(value = "usersFavoriteRestaurants", timeToLive = DEFAULT_CACHE_TIME)
 class UserFavoriteRestaurants implements Serializable {
 
     private String id;
