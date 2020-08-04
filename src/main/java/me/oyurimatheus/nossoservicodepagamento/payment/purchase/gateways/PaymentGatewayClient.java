@@ -1,10 +1,13 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways;
 
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Payment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -17,12 +20,24 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class PaymentGatewayClient {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PaymentGatewayClient.class);
+    private PaymentGatewayClientFactory paymentGatewayClientFactory;
+
+    PaymentGatewayClient(PaymentGatewayClientFactory paymentGatewayClientFactory) {
+        this.paymentGatewayClientFactory = paymentGatewayClientFactory;
+    }
+
     boolean pay(URI baseUri, PaymentGatewayRequest request) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class);
+        RestTemplate restTemplate = paymentGatewayClientFactory.getRestTemplate();
 
-        return response.getStatusCode() == OK;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(baseUri, POST, new HttpEntity<>(request), String.class);
+            return response.getStatusCode() == OK;
+        } catch (ResourceAccessException e) {
+            LOG.error("Error: {}. Failed to get service {}", e.getCause(), baseUri);
+            return false;
+        }
     }
 
     static class PaymentGatewayRequest {

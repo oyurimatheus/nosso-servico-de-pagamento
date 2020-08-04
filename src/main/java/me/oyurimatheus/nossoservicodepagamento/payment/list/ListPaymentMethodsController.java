@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+import static me.oyurimatheus.nossoservicodepagamento.payment.list.CacheProps.DEFAULT_CACHE_TIME;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -31,7 +32,7 @@ class ListPaymentMethodsController {
             Set<PaymentMethod> paymentMethods = cachedUser.getPaymentMethods();
             Set<PaymentMethodsResponse> response = PaymentMethodsResponse.from(paymentMethods);
 
-            return ok(response);
+            return ok().header("Cache-Control", "private", String.format("max-age=%d", DEFAULT_CACHE_TIME)).body(response);
         }
 
         Set<PaymentMethod> paymentMethods = searchPaymentInDatabase.findPaymentMethods(cachedUser);

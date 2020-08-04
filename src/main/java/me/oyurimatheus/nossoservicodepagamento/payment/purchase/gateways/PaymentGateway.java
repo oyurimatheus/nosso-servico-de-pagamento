@@ -1,6 +1,5 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways;
 
-import me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Country;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.Payment;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.PaymentTransaction;
@@ -57,6 +56,7 @@ class PaymentGateway {
         if (!accept(payment)) {
             throw new IllegalArgumentException("this gateway does not accept this payment");
         }
+
 
         boolean paymentSuccessful = client.pay(URI.create(gatewayUri), new PaymentGatewayClient.PaymentGatewayRequest(payment));
         if (paymentSuccessful) {
