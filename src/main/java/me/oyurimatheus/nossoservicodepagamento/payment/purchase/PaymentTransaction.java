@@ -1,5 +1,7 @@
 package me.oyurimatheus.nossoservicodepagamento.payment.purchase;
 
+import me.oyurimatheus.nossoservicodepagamento.payment.User;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -46,7 +48,15 @@ public class PaymentTransaction {
         return new PaymentTransaction(payment, FALHA);
     }
 
+    public Payment getPayment() {
+        return payment;
+    }
+
     public PaymentTransactionStatus getStatus() {
         return status;
+    }
+
+    public boolean generatedBy(User user) {
+        return user.equals(payment.getUser());
     }
 }

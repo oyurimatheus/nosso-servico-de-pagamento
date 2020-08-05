@@ -5,14 +5,12 @@ import me.oyurimatheus.nossoservicodepagamento.payment.Restaurant;
 import me.oyurimatheus.nossoservicodepagamento.payment.User;
 import me.oyurimatheus.nossoservicodepagamento.payment.purchase.gateways.CreditCardFlag;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
@@ -21,7 +19,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static me.oyurimatheus.nossoservicodepagamento.payment.PaymentMethod.CREDIT_CARD;
 import static me.oyurimatheus.nossoservicodepagamento.payment.purchase.PaymentStatus.ESPERANDO_OFFLINE;
 import static me.oyurimatheus.nossoservicodepagamento.payment.purchase.PaymentStatus.ESPERANDO_ONLINE;
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.Assert.isTrue;
+import static org.springframework.util.Assert.notNull;
 
 @Table(name = "payments")
 @Entity
@@ -191,5 +190,29 @@ public class Payment {
         Assert.notNull(creditCardNumber, "Cannot get a card flag from a payment without credit card number");
 
         return CreditCardFlag.flagFrom(creditCardNumber);
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getRestaurantName() {
+        return restaurant.getName();
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public String getCreditCardLast4Numbers() {
+        if (creditCardNumber == null) {
+            return "";
+        }
+
+        return creditCardNumber.substring(14);
+    }
+
+    public User getUser() {
+        return user;
     }
 }

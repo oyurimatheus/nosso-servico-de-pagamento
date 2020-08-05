@@ -42,4 +42,8 @@ public class Restaurant {
                                    .filter(payment -> paymentMethods.contains(payment))
                                    .collect(toSet());
     }
+
+    public String getName() {
+        return name;
+    }
 }
