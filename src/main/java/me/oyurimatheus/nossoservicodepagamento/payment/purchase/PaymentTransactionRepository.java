@@ -12,4 +12,6 @@ interface PaymentTransactionRepository extends Repository<PaymentTransaction, Lo
 
     @Query("SELECT p FROM PaymentTransaction p WHERE p.payment.purchaseId = :purchaseId")
     Optional<PaymentTransaction> findByPurchaseId(@Param("purchaseId") String purchaseId);
+
+    Optional<PaymentTransaction> findById(Long id);
 }
